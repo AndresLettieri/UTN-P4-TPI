@@ -1,0 +1,196 @@
+
+### 1. Crear categoría 1
+POST http://localhost:8000/categorias/
+Content-Type: application/json
+
+{
+"nombre": "Bebidas",
+"descripcion": "Bebidas gaseosas y sin alcohol"
+}
+
+### 2. Crear categoría 2
+POST http://localhost:8000/categorias/
+Content-Type: application/json
+
+{
+"nombre": "Gaseosas",
+"descripcion": "Bebidas gaseosas"
+}
+
+
+### 3. Listar categorías
+GET http://localhost:8000/categorias/
+
+### 4. Obtener categoría
+GET http://localhost:8000/categorias/1
+
+### 5. Actualizar categoría
+PUT http://localhost:8000/categorias/1
+Content-Type: application/json
+
+{
+"nombre": "Bebidas",
+"descripcion": "Bebidas gaseosas y sin alcohol cambio"
+}
+
+### 6. Crear producto con una categoría
+
+POST http://localhost:8000/productos/
+Content-Type: application/json
+
+{
+"nombre": "Coca Cola",
+"descripcion": "Gaseosa Coca Cola 2.25L",
+"precio_base": 1500,
+"imagen_url": [
+"https://ejemplo.com/coca-cola.jpg"
+],
+"disponible": true,
+"categoria_id": 1
+}
+
+### 7. Crear otro producto
+POST http://localhost:8000/productos/
+Content-Type: application/json
+
+{
+"nombre": "Sprite",
+"descripcion": "Gaseosa Sprite 2.25L",
+"precio_base": 1400,
+"imagen_url": [
+"https://ejemplo.com/sprite.jpg"
+],
+"disponible": true,
+"categoria_id": 2
+}
+
+### 8. Listar productos
+GET http://localhost:8000/productos?skip=0&limit=10
+
+### 9. Obtener producto
+GET http://localhost:8000/productos/1
+
+### 10. Actualizar producto
+PUT http://localhost:8000/productos/1
+Content-Type: application/json
+
+{
+"nombre": "Coca Cola",
+"descripcion": "Gaseosa Coca Cola 2.25Lddd",
+"precio_base": 16000,
+"imagen_url": [
+"https://ejemplo.com/coca-cola.jpg"
+],
+"disponible": true
+}
+
+### 11. Asociar una segunda categoría al producto 1
+POST http://localhost:8000/productos/1/categorias
+Content-Type: application/json
+
+{
+ "categoria_id": 2
+}
+
+### 12. Asociar categoría 1 al producto 2
+POST http://localhost:8000/productos/2/categorias
+Content-Type: application/json
+
+{
+ "categoria_id": 1
+}
+
+### 13. Quitar categoría 2 del producto 1
+DELETE http://localhost:8000/productos/13/categorias/2
+
+
+### 14. Eliminar producto
+DELETE http://localhost:8000/productos/2
+
+### 15. Eliminar categoría
+DELETE http://localhost:8000/categorias/2
+
+
+
+
+###PEDIDOS###
+
+POST http://localhost:8000/pedidos
+Content-Type: application/json
+
+{
+  "forma_pago_codigo": "EFECTIVO",
+  "notas": "Pedido de prueba REST Client",
+  "descuento": 0,
+  "costo_envio": 500,
+  "items": [
+    {
+      "producto_id": 1,
+      "cantidad": 2,
+      "personalizacion": null
+    }
+  ]
+}
+
+### 2. Listar pedidos
+
+GET http://localhost:8000/pedidos?skip=0&limit=10
+
+### 3. Obtener pedido por ID
+
+GET http://localhost:8000/pedidos/1
+
+### 4. Obtener pedido inexistente - Error 404
+
+GET http://localhost:8000/pedidos/44
+
+### 5. Crear pedido con datos inválidos - Error 422
+# La cantidad se envía como texto para provocar un error de validación
+# si el esquema exige un entero.
+
+POST http://localhost:8000/pedidos
+Content-Type: application/json
+
+{
+  "forma_pago_codigo": "EFECTIVO",
+  "notas": "Prueba de validación",
+  "descuento": 0,
+  "costo_envio": 0,
+  "items": [
+    {
+      "producto_id": 1,
+      "cantidad": "dos",
+      "personalizacion": null
+    }
+  ]
+}
+
+### 6. Cambiar estado del pedido
+
+PUT http://localhost:8000/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado_hacia": "CONFIRMADO",
+  "motivo": "Pedido confirmado para la demostración"
+}
+
+### 7. Intentar una transición no permitida - Error 409
+# Ejecutar después de confirmar el pedido.
+# EN_CAMINO no es un destino permitido desde CONFIRMADO.
+
+PATCH http://localhost:8000/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado_hacia": "EN_CAMINO",
+  "motivo": "Prueba de transición inválida"
+}
+
+### 8. Consultar historial de estados
+
+GET http://localhost:8000/pedidos/1/historial
+
+### 9. Eliminar lógicamente el pedido
+
+DELETE http://localhost:8000/pedidos/1
